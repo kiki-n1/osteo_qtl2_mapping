@@ -1,7 +1,5 @@
 # 4_make_crossfile
 
-#phenotype file column name format: Mouse.ID, sex, ngen
-
 ```{r}
 library(qtl2)
 geno = readRDS("./Rfile/geno.final_merged.RDS") #genotype data after QC
@@ -19,7 +17,7 @@ areaBMC_pheno = areaBMC_pheno[which(areaBMC_pheno$Mouse.ID %in% colnames(geno)),
 
 areaBMC_pheno = areaBMC_pheno[,7:10]
 
-write.table(areaBMC_pheno,"./Rfile/areaBMC_pheno.csv",quote = FALSE, sep = "," )
+write.csv(areaBMC_pheno,"./Rfile/areaBMC_pheno.csv",quote = FALSE, sep = ",")
 save(areaBMC_pheno, file = "./Rfile/areaBMC_pheno.Rdata")
 
 
@@ -37,9 +35,9 @@ row.names(areaBMC_covar) = areaBMC_covar$Mouse.ID
 
 areaBMC_covar = areaBMC_covar[which(areaBMC_covar$Mouse.ID %in% colnames(geno)),]
 
-areaBMC_covar = areaBMC_covar[,3:4]
+areaBMC_covar = areaBMC_covar[,c("sex","Group","ngen")]
 
-write.table(areaBMC_covar,"./Rfile/areaBMC_covar.csv",quote = FALSE, sep = "," )
+write.csv(areaBMC_covar,"./Rfile/areaBMC_covar.csv",quote = FALSE, sep = ",")
 save(areaBMC_covar, file = "./Rfile/areaBMC_covar.Rdata")
 
 ```
@@ -69,21 +67,19 @@ write_control_file("control_file_basic.json",
 
 
 
-
-
-
-------------correct the following code------------------------
 #read the cross file
 ```{r}
 cross_areaBMC = read_cross2("control_file_basic.json")
 
-#506 sample
+
 ```
 #based on the qc results, get the appropriate marker set for genotype probability calculation
 
 #112869 markers remaining - final
 ```{r}
-cross_basic = pull_markers(cross, rownames(geno))
+cross_basic = pull_markers(cross_areaBMC, rownames(geno))
 
 save(cross_basic, file ="cross_basic.Rdata")
 ```
+
+
