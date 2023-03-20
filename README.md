@@ -1,1 +1,1 @@
-# qtl1-mapping
+# qtl2-mapping
