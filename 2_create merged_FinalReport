@@ -1,0 +1,79 @@
+# create merged_FinalReport
+
+```{r}
+#skip 9 to skip the header lines in FinalReports
+
+myfread_fr <- function(filename) data.table::fread(filename, data.table=FALSE,skip = 9)
+```
+
+```{r}
+#These are GeneSeek FinalReport files
+
+x = myfread_fr("./data/GIGAMUGA_final_report/Univ_of_Colorado_Bicknell_MURGIGV01_20200930_FinalReport.txt")
+x2 = myfread_fr("./data/GIGAMUGA_final_report/Univ_of_Colorado_Bicknell_MURGIGV01_20210624_FinalReport.txt")
+x3 = myfread_fr("./data/GIGAMUGA_final_report/Univ_of_Colorado_Bicknell_MURGIGV01_20211014_FinalReport.txt")
+x4 = myfread_fr("./data/GIGAMUGA_final_report/Univ_of_Colorado_Bicknell_MURGIGV01_20221103_FinalReport.txt")
+x5 = myfread_fr("./data/GIGAMUGA_final_report/Univ_of_Colorado_Bicknell_MURGIGV01_20221128_FinalReport.txt")
+```
+
+```{r}
+merged = rbind(x,x2,x3,x4,x5)
+
+write.table(x = merged, file = "./data/Merged_FinalReport.txt", quote = FALSE,row.names = FALSE,sep = "\t")
+```
+
+
+
+
+
+```{r}
+rm(x,x2,x3,x4,x5,merged)
+```
+
+
+#ADD THIS HEADER TO THE FILE MANUALLY!! without hashes
+
+# [Header]
+# GSGT Version	2.0.2
+# Processing Date	11/14/2017 10:35 AM
+# Content		GigaMuga_11769261_A.bpm
+# Num SNPs	143259
+# Total SNPs	143446
+# Num Samples	744
+# Total Samples	744
+# [Data]
+
+
+# create merged_Sample_Map
+
+```{r}
+#skip 9 to skip the header lines in FinalReports
+
+myfread_fr_sm <- function(filename) data.table::fread(filename, data.table=FALSE)
+```
+
+```{r}
+#These are GeneSeek FinalReport files
+
+x6 = myfread_fr_sm("./data/sample_map/Sample_Map_20200930.txt")
+x7 = myfread_fr_sm("./data/sample_map/Sample_Map_20210624.txt")
+x8 = myfread_fr_sm("./data/sample_map/Sample_Map_20211014.txt")
+x9 = myfread_fr_sm("./data/sample_map/Sample_Map_20221103.txt")
+x10 = myfread_fr_sm("./data/sample_map/Sample_Map_20221128.txt")
+```
+
+```{r}
+merged_sm = rbind(x6,x7,x8,x9,x10)
+
+write.table(x = merged_sm, file = "./data/Merged_Sample_Map.txt", quote = FALSE,row.names = FALSE,sep = "\t")
+```
+
+
+```{r}
+rm(x6,x7,x8,x9,x10,merged_sm)
+```
+
+
+
+
+
