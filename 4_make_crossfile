@@ -79,7 +79,7 @@ cross_areaBMC = read_cross2("control_file_basic.json")
 ```{r}
 cross_basic = pull_markers(cross_areaBMC, rownames(geno))
 
-save(cross_basic, file ="cross_basic.Rdata")
+save(cross_basic, file ="./Rfile/cross_basic.Rdata")
 ```
 
 
