@@ -1,0 +1,89 @@
+# 4_make_crossfile
+
+#phenotype file column name format: Mouse.ID, sex, ngen
+
+```{r}
+library(qtl2)
+geno = readRDS("./Rfile/geno.final_merged.RDS") #genotype data after QC
+```
+##generate pheno files 
+```{r}
+areaBMC_pheno <- read.csv("./data/areaBMC.csv", stringsAsFactors = FALSE)
+
+# the sample IDs must be in the rownames of pheno
+row.names(areaBMC_pheno) = areaBMC_pheno$Mouse.ID
+
+# subset only those that have genotyping data
+
+areaBMC_pheno = areaBMC_pheno[which(areaBMC_pheno$Mouse.ID %in% colnames(geno)),]
+
+areaBMC_pheno = areaBMC_pheno[,7:10]
+
+write.table(areaBMC_pheno,"./Rfile/areaBMC_pheno.csv",quote = FALSE, sep = "," )
+save(areaBMC_pheno, file = "./Rfile/areaBMC_pheno.Rdata")
+
+
+#(start:839 samples,end:818 samples.)
+```
+
+##prepare covariate data, contain column sex & DO generation
+```{r}
+areaBMC_covar <- read.csv("./data/areaBMC.csv", stringsAsFactors = FALSE)
+
+# the sample IDs must be in the rownames of pheno
+row.names(areaBMC_covar) = areaBMC_covar$Mouse.ID
+
+# subset only those that have genotyping info
+
+areaBMC_covar = areaBMC_covar[which(areaBMC_covar$Mouse.ID %in% colnames(geno)),]
+
+areaBMC_covar = areaBMC_covar[,3:4]
+
+write.table(areaBMC_covar,"./Rfile/areaBMC_covar.csv",quote = FALSE, sep = "," )
+save(areaBMC_covar, file = "./Rfile/areaBMC_covar.Rdata")
+
+```
+
+#prepare control file. control file paths relative to control file path
+
+```{r}
+chr <- c(1:19, "X")
+write_control_file("control_file_basic.json",
+                   crosstype="do",
+                   description="control file for areaBMC QTL, basic",
+                   founder_geno_file=paste0("./data/GM/GM_foundergeno", chr, ".csv"),
+                   founder_geno_transposed=TRUE,
+                   gmap_file=paste0("./data/GM/GM_gmap", chr, ".csv"),
+                   pmap_file=paste0("./data/GM/GM_pmap", chr, ".csv"),
+                   geno_file=paste0("./geno_qtl2/DO_qtl2_geno", chr, ".csv"),
+                   geno_transposed=TRUE,
+                   geno_codes=list(A=1, H=2, B=3),
+                   xchr="X",
+                   pheno_file="./Rfile/areaBMC_pheno.csv",
+                   covar_file="./Rfile/areaBMC_covar.csv",
+                   sex_covar="sex",
+                   sex_codes=list(F="Female", M="Male"),
+                   crossinfo_covar="ngen",
+                   na.strings=list(NA,"-"),overwrite = T)
+```
+
+
+
+
+
+
+------------correct the following code------------------------
+#read the cross file
+```{r}
+cross_areaBMC = read_cross2("control_file_basic.json")
+
+#506 sample
+```
+#based on the qc results, get the appropriate marker set for genotype probability calculation
+
+#112869 markers remaining - final
+```{r}
+cross_basic = pull_markers(cross, rownames(geno))
+
+save(cross_basic, file ="cross_basic.Rdata")
+```
