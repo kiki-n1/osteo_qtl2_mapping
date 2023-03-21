@@ -33,7 +33,7 @@ pr = clean_genoprob(pr)
 
 save(pr,file ="./Rfile/pr.Rdata")
 
-apr = genoprob_to_alleleprob(pr)#additive allele model
+apr = genoprob_to_alleleprob(pr)
 #additive allele model
 
 save(apr,file ="./Rfile/apr.Rdata")
@@ -62,8 +62,6 @@ covar[,"sex"] = (covar[,"sex"] == "M")*1
 
 covar = apply(covar,2,as.numeric) #make sure all cols are numeric
 rownames(covar) = rownames(cross_basic$covar)#make sure rownames match original cross file
-
-covar = covar[,-1]#remove column "Mouse.ID"
 
 save(covar,file ="./Rfile/covar.Rdata")
 ```
