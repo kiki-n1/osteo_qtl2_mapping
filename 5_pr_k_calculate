@@ -68,6 +68,9 @@ save(covar,file ="./Rfile/covar.Rdata")
 ```
 
 ##normalize pheno
+##log(x)
+##sqrt(x)
+##rankZ(x)
 ```{r}
 pheno <- log(cross_basic$pheno)
 
@@ -76,8 +79,8 @@ save(pheno,file ="./Rfile/pheno.Rdata")
 ```
 
 ```{r}
-hist(pheno[,1], main = " 12wk_BoneArea (log-transformed)")
-hist(pheno[,2], main = " 12wk_BMC (log-transformed)")
-hist(pheno[,3], main = " 16wk_BoneArea (log-transformed)")
-hist(pheno[,4], main = " 16wk_BMC (log-transformed)")
+hist(pheno[,1], main = " 12wk_BMC (log-transformed)")
+hist(pheno[,2], main = " 12wk_BMD (log-transformed)")
+hist(pheno[,3], main = " 16wk_BMC (log-transformed)")
+hist(pheno[,4], main = " 16wk_BMD (log-transformed)")
 ```
