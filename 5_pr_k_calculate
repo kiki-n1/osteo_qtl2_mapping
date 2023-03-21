@@ -59,6 +59,7 @@ save(Xcovar,file ="./Rfile/Xcovar.Rdata")
 ```{r}
 covar = as.matrix(cross_basic$covar)
 covar[,"sex"] = (covar[,"sex"] == "M")*1
+covar[,"Group"] = (covar[,"Group"] == "PTH")*1
 
 covar = apply(covar,2,as.numeric) #make sure all cols are numeric
 rownames(covar) = rownames(cross_basic$covar)#make sure rownames match original cross file
