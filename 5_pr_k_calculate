@@ -78,5 +78,5 @@ save(pheno,file ="./Rfile/pheno.Rdata")
 hist(pheno[,1], main = " 12wk_BoneArea (log-transformed)")
 hist(pheno[,2], main = " 12wk_BMC (log-transformed)")
 hist(pheno[,3], main = " 16wk_BoneArea (log-transformed)")
-hist(pheno[,4], main = " 116wk_BMC (log-transformed)")
+hist(pheno[,4], main = " 16wk_BMC (log-transformed)")
 ```
