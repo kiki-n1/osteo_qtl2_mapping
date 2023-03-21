@@ -1,0 +1,83 @@
+#calculate genotype probs and allele probs and calculate kinship
+
+```{r}
+library(qtl2)
+load("./Rfile/cross_basic.Rdata")
+```
+
+
+
+```{r}
+map <- cross_basic$gmap
+
+save(map,file ="./Rfile/map.Rdata")
+
+pmap <- cross_basic$pmap
+save(pmap,file ="./Rfile/pmap.Rdata")
+
+```
+
+##calculate the QTL genotype probabilities
+```{r}
+pr <- calc_genoprob(cross = cross_basic, 
+                    map = map, 
+                    error_prob = 0.002,
+                    map_function = "c-f",
+                    quiet = F,
+                    cores = 8)
+#use carter-falconer mapping function
+#To speed up the calculations with large datasets on a multi-core machine, you can use the argument cores. With cores=0, the number of available cores will be detected via parallel::detectCores(). Otherwise, specify the number of cores as a positive integer.
+
+#cleans genotype probabilities by setting small values to 0 and, for genotype columns where the maximum value is not large, setting all values to 0. This is intended to help with the problem of unstable estimates of genotype effects in scan1coef() and fit1() when there's a genotype that is largely absent.
+pr = clean_genoprob(pr)
+
+save(pr,file ="./Rfile/pr.Rdata")
+
+apr = genoprob_to_alleleprob(pr)#additive allele model
+#additive allele model
+
+save(apr,file ="./Rfile/apr.Rdata")
+```
+
+
+##calculate kinship, loco: Leave One Chromosome Out
+```{r}
+k <- calc_kinship(apr, type = "loco")
+
+save(k,file ="./Rfile/k.Rdata")
+```
+
+
+##In a QTL scan of the X chromosome, special covariates (such as sex) may need to be included under the null hypothesis of no QTL, to avoid spurious evidence of linkage.
+```{r}
+Xcovar <- get_x_covar(cross_basic)
+
+save(Xcovar,file ="./Rfile/Xcovar.Rdata")
+```
+
+##create additive covariates that will be used in the mapping model. We will use sex & DO generation as covariate in the mapping model.create covar object. This is different fron the covar in cross_basic in that sex is a factor (1 for males, 0 for females)
+```{r}
+covar = as.matrix(cross_basic$covar)
+covar[,"sex"] = (covar[,"sex"] == "M")*1
+
+covar = apply(covar,2,as.numeric) #make sure all cols are numeric
+rownames(covar) = rownames(cross_basic$covar)#make sure rownames match original cross file
+
+covar = covar[,-1]#remove column "Mouse.ID"
+
+save(covar,file ="./Rfile/covar.Rdata")
+```
+
+##normalize pheno
+```{r}
+pheno <- log(cross_basic$pheno)
+
+save(pheno,file ="./Rfile/pheno.Rdata")
+
+hist(pheno[,2], main = " (log-transformed)")
+```
+
+
+
+
+
