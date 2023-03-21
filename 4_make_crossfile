@@ -1,5 +1,8 @@
 # 4_make_crossfile
 
+# Mouse.ID, sex, ngen 
+
+
 ```{r}
 library(qtl2)
 geno = readRDS("./Rfile/geno.final_merged.RDS") #genotype data after QC
