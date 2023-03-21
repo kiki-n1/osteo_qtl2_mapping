@@ -55,7 +55,10 @@ Xcovar <- get_x_covar(cross_basic)
 save(Xcovar,file ="./Rfile/Xcovar.Rdata")
 ```
 
-##create additive covariates that will be used in the mapping model. We will use sex & DO generation as covariate in the mapping model.create covar object. This is different fron the covar in cross_basic in that sex is a factor (1 for males, 0 for females)
+##create additive covariates that will be used in the mapping model. 
+#We will use sex, Group(treatment), ngen as covariate in the mapping model.
+#sex: 1 for males, 0 for females
+#Group: 1 for PTH, 0 for Saline
 ```{r}
 covar = as.matrix(cross_basic$covar)
 covar[,"sex"] = (covar[,"sex"] == "M")*1
