@@ -1,0 +1,136 @@
+```{r}
+set.seed(8675309)
+library(qtl2)
+
+load("./Rfile/apr.Rdata")
+load("./Rfile/pheno.Rdata")
+load("./Rfile/k.Rdata")
+load("./Rfile/covar.Rdata")
+load("./Rfile/Xcovar.Rdata")
+load("./Rfile/map.Rdata")
+load("./Rfile/pmap.Rdata")
+load("./Rfile/cross_basic.Rdata")
+```
+
+
+##Performing a genome scan with a additive model
+```{r}
+qtl_scan <- scan1( genoprobs = apr,
+                   pheno = pheno,
+                   kinship = k,
+                   addcovar = covar,
+                   Xcovar = Xcovar,
+                   cores = 0)
+
+save(qtl_scan,file = "./Rfile/qtl_scan.Rdata")
+
+write.csv(qtl_scan, file = "./results/qtl_scan.csv",quote = FALSE)
+
+#the largest lod score is at marker 
+```
+
+
+##genome scan with an interactive model w/ group
+```{r}
+qtl_scan_int <- scan1( genoprobs = apr,
+                       pheno = pheno,
+                       kinship = k,
+                       addcovar = covar,
+                       Xcovar = Xcovar,
+                       cores = 0,
+                       intcovar = covar[, "Group"])
+
+save(qtl_scan_int,file = "./Rfile/qtl_scan_int.Rdata")
+write.csv(qtl_scan_int, file = "./results/qtl_scan_int.csv",quote = FALSE)
+
+#the largest lod score is at marker 
+```
+
+
+```{r}
+#additive permutation 
+perm_add <- scan1perm(cores = 2,
+                         genoprobs = apr,
+                         pheno = pheno,
+                         kinship = k,
+                         addcovar = covar,
+                         Xcovar = Xcovar,
+                         n_perm = 1000,
+                         perm_Xsp = TRUE,
+                         chr_lengths = chr_lengths(map))
+
+save(perm_add,file ="./Rfile/perm_add.Rdata")
+summary(perm_25_add, alpha=c(0.05, 0.10, 0.63))
+```
+
+
+```{r}
+#interactive permutation
+perm_int <- scan1perm(cores = 2,
+                  genoprobs = apr, 
+                  pheno = pheno, 
+                  kinship = k,
+                  addcovar = covar,
+                  Xcovar = Xcovar, 
+                  n_perm = 1000,
+                  perm_Xsp=TRUE, 
+                  chr_lengths=chr_lengths(map),
+                  intcovar = covar[,"Group"])
+
+save(perm_int,file ="./Rfile/perm_int.Rdata")
+summary(perm_int, alpha=c(0.05, 0.10, 0.63))
+```
+
+
+##permutation test and plot
+```{r}
+#plot qtl scan with 1000 permutation test / additive
+#[,1]12wk_bmc
+#[,2]12wk_BMD
+#[,3]16wk_bmc
+#[,4]16wk_BMD
+
+library(ggplot2)
+plot_scan1(x = qtl_scan[, 1],
+           map = pmap,
+           ylim = c(0, 9),
+           bgcolor = "grey97",
+           altcol = "green4",
+           main = "additive_QTL_map_12wk_bmc")
+ 
+thr = summary(perm_add, alpha=c(0.05, 0.10, 0.63))
+
+u <- par("usr")
+endA <- xpos_scan1(pmap, thechr=19, thepos=max(pmap[[19]]))+25/2
+
+# two seperate threshold line to chr A & X
+segments(u[1], thr$A[,1], endA, thr$A[,1], col = c("red","orange","yellow"), lty=2) 
+segments(endA, thr$X[,1], u[2], thr$X[,1], col = c("red","orange","yellow"), lty=2)
+
+```
+
+
+##Estimated QTL effects
+##look at the contribution of each of the eight founder alleles to the Muc5b Dot Blot, we plot these effects (also called ‘coefficients’) across Chr ???
+```{r}
+chr <- 1
+coef_1_12wkBMD <- scan1blup(genoprobs = apr[,chr], 
+                  pheno = pheno[,2], 
+                  kinship <- k[[chr]], 
+                  addcovar = covar,
+                  cores = 7)
+
+save(coef_1_12wkBMD,file = "coef_1_12wkBMD.Rdata")
+
+
+#use pmap to plot coefficient figure
+plot_coefCC(x = coef_1_12wkBMD, 
+            map = pmap,
+            main = "chr1 coef on 12wk_BMD",
+            scan1_output = qtl_scan,
+            ylim=c(-0.05, 0.05),
+            ylim_lod = c(0, 6.5),
+            bgcolor="grey97",
+            legend = "topright",
+            legend_ncol = 4)
+```
