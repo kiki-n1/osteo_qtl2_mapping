@@ -1,0 +1,67 @@
+
+```{r}
+
+library(qtl2)
+
+load("./Rfile/apr.Rdata")
+load("./Rfile/pheno.Rdata")
+load("./Rfile/k.Rdata")
+load("./Rfile/covar.Rdata")
+load("./Rfile/Xcovar.Rdata")
+load("./Rfile/map.Rdata")
+load("./Rfile/pmap.Rdata")
+load("./Rfile/cross_basic.Rdata")
+```
+
+
+##Finding LOD peaks according to lod score = 4， drop = 1,
+```{r}
+qtl_peaks_drop <- find_peaks(scan1_output = qtl_scan,
+                            map = pmap,
+                            threshold = 4,
+                            drop = 1,
+                            expand2markers = FALSE)
+
+save(qtl_peaks_drop,file = "./Rfile/qtl_peaks_drop.Rdata")
+```
+
+
+#snp accociation without "keep_all_snps"
+```{r}
+
+chr <- 1
+start <- 53.199769
+end <- 56.04278
+  
+query_variants <- create_variant_query_func("cc_variants_grcm39_ens104.sqlite")
+query_genes <- create_gene_query_func("mouse_genes_ensembl104.sqlite")
+
+snps_1_12wkBMD <- scan1snps(apr,
+                        cross_basic$pmap,
+                        cross_basic$pheno[, 2],
+                        k[["chr"]],
+                        addcovar = covar,
+                        Xcovar = Xcovar,
+                        query_func = query_variants,
+                        chr = chr,
+                        start = start,
+                        end = end)
+save(snps_1_12wkBMD,file ="./Rfile/snps_1_12wkBMD.Rdata") 
+
+genes_1_12wkBMD <- query_genes(chr, start, end)
+save(genes_1_12wkBMD,file ="./Rfile/genes_1_12wkBMD.Rdata") 
+
+pcg_1_12 <- genes_1_12wkBMD$mgi_type == "protein_coding"
+filtered_genes_1_12wkBMD <- genes_1_12wkBMD[pcg_1_12,]
+
+plot_snpasso(snps_1_12wkBMD$lod, 
+             snps_1_12wkBMD$snpinfo, 
+             genes = filtered_genes_1_12wkBMD,
+             sdp_panel=TRUE,
+             drop_hilit = 0.5,
+             bgcolor="grey97",
+             main = "chr1_12wkBMD")
+    
+
+
+```
