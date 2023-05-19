@@ -133,4 +133,23 @@ plot_coefCC(x = coef_1_12wkBMD,
             bgcolor="grey97",
             legend = "topright",
             legend_ncol = 4)
+            
+            
+#to plot partial region coef: 
+#1_find out peak marker(eg.UNC30868575);
+#2_find out index of peak marker in "GM/GM_allelecode.csv"(eg.1263);
+#3_usually th eindex should be the same as index in "./Rfile/coef_chrX_J.csv", if they are different, there must be something wrong
+#4_check if the coef region contain QTL peaks
+
+write.csv(coef_chrX_J,"./Rfile/coef_chrX_J.csv",quote = FALSE)
+
+plot_coefCC(x = coef_chrX_J[1420:2050,], 
+            map = pmap,
+            main = "ChrX_J",
+            scan1_output = add_QTLscan_apr22)
+
+plot_coefCC(x = coef_chrX_J, 
+            map = pmap,
+            main = "ChrX_J",
+            scan1_output = add_QTLscan_apr22)
 ```
